@@ -1,12 +1,12 @@
 from twilio.rest import Client
 import random
+import sys
 
 account_sid = "AC0220e11df6beadfe315afd84fdd6fa81"
 auth_token = "043b15a020f47cce20f09af7246855c8"
 twilioPhoneNumber = "+15204418736"
 
 client = Client(account_sid, auth_token)
-
 
 class Person:
 	def __init__(self, name, phone):
@@ -24,8 +24,7 @@ class Person:
 	def __hash__(self):
 		return id(self)
 
-
-def init():
+def initPeople():
 	david = Person("David", "5208184387")
 	victor = Person("Victor", "9135688428")
 	pri = Person("Priyanka", "8324537544")
@@ -35,10 +34,9 @@ def init():
 
 	return [david, victor, pri, iris, lucy, alex]
 
-def shuffle():
-
-	santas = init()
-	options = init()
+def shuffle(useTwilio):
+	santas = initPeople()
+	options = initPeople()
 	pairings = {}
 
 	for santa in santas:
@@ -53,24 +51,47 @@ def shuffle():
 
 	# Save an answer key, just in case
 	masterKey = open("Secret Santa Master Key.txt", "w")
+	if not useTwilio:
+		print "\n"
+		print "Welcome to Secret Santa"
+
 	for key, value in pairings.iteritems():
 		masterKey.write(str(key.name) + " is the santa of " + str(value.name) + ".\n")
+		send(key, value, useTwilio)
 
-		send(key, value)
+	if not useTwilio:
+		print "\n"
 
 	masterKey.close()
 
 
 
-
-
-def send(santa, santaee):
+def send(santa, santaee, useTwilio):
 	bodyString = "Hi " + santa.name + ", your santaee is " + santaee.name + ". Don't fuck up."
-	# message = client.messages.create(
-	#     to=santa.phone, 
-	#     from_=twilioPhoneNumber,
-	#     body=bodyString)
+	if useTwilio:
+		message = client.messages.create(
+		    to=santa.phone, 
+		    from_=twilioPhoneNumber,
+		    body=bodyString)
+	else:
+		print "\t" + bodyString
 
-	print bodyString
+def main(useTwilio):
+	shuffle(useTwilio)
 
-shuffle()
+if __name__ == '__main__':
+    
+    if len(sys.argv) == 1:
+    	main(False)
+    else:
+	    flagArg = sys.argv[1]
+
+	    if flagArg == "-h":
+		    print "These are the help commands."
+		    print "Use -t to send with twilio, -p to print locally."
+	    elif flagArg == "-t":
+	    	main(True)
+	    elif flagArg == "-p":
+	    	main(False)
+	    else:
+	    	main(False)
