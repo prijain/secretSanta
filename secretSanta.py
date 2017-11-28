@@ -16,6 +16,14 @@ class Person:
 	def __str__(self):
 		return self.name + ": " + str(self.phone)
 
+	# gdi victor is this really better?
+	def __eq__(self, other):
+		return self.name == other.name and self.phone == other.phone
+
+	# this is victor's fault
+	def __hash__(self):
+		return id(self)
+
 
 def init():
 	david = Person("David", "5208184387")
@@ -37,7 +45,7 @@ def shuffle():
 		# A "santaee" is to "santa" as "employee" is to "employer"
 		santaee = random.choice(options)
 		# Don't be your own santa. Redraw until it's not.
-		while str(santaee) == str(santa): # IDK why but object comparison seems to fail here
+		while santaee == santa:
 			santaee = random.choice(options)
 		
 		pairings[santa] = santaee
