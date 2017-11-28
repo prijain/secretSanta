@@ -51,10 +51,14 @@ def shuffle():
 		pairings[santa] = santaee
 		options.remove(santaee)
 
+	# Save an answer key, just in case
+	masterKey = open("Secret Santa Master Key.txt", "w")
 	for key, value in pairings.iteritems():
-		# print str(key) + "\t|\t" + str(value)
+		masterKey.write(str(key.name) + " is the santa of " + str(value.name) + ".\n")
 
 		send(key, value)
+
+	masterKey.close()
 
 
 
